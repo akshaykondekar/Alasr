@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#06DD75</color>
+    <color name="colorPrimaryDark">#00A463</color>
+    <color name="colorAccent">#828282</color>
+
+    <color name="colorGreyLight">#DDDCDC</color>
+    <color name="colorGreenBg">#F6FDF8</color>
+    <color name="colorCalenderSelect">#017243</color>
+
+    <color name="colorTitleText">#008A51</color>
+    <color name="colorText">#434242</color>
+
+    <color name="colorRatingStar">#FFD500</color>
+</resources>

@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.trikwetra.alasr.MainActivity">
+    <item
+        android:id="@+id/action_qibla"
+        android:icon="@drawable/ic_action_qibla"
+        app:showAsAction="ifRoom"
+        android:title="qibla"/>
+    <item
+        android:id="@+id/action_notification"
+        android:icon="@drawable/ic_action_notification"
+        app:showAsAction="ifRoom"
+        android:title="notification"/>
+</menu>

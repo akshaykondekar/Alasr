@@ -227,8 +227,8 @@ public class Fragment_Home extends Fragment {
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
 
-                /*Collections.sort(places,new NearByPlaces(new LatLng(MainActivity.mLastKnownLocation.getLatitude(),
-                        MainActivity.mLastKnownLocation.getLongitude())));*/
+                Collections.sort(places,new NearByPlaces(new LatLng(MainActivity.mLastKnownLocation.getLatitude(),
+                        MainActivity.mLastKnownLocation.getLongitude())));
 
                 if (mMap != null && MainActivity.mLastKnownLocation != null) {
                     myLocationIcon =
@@ -250,7 +250,7 @@ public class Fragment_Home extends Fragment {
                     public boolean onMarkerClick(Marker marker) {
                         if (markerList.contains(marker)) {
                             Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
-                            //drawRoute(marker.getPosition().latitude,marker.getPosition().longitude);
+                            drawRoute(marker.getPosition().latitude,marker.getPosition().longitude);
                         }
                         return false;
                     }

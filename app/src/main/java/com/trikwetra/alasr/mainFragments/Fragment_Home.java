@@ -84,31 +84,7 @@ public class Fragment_Home extends Fragment {
         clViewpager = rootView.findViewById(R.id.cl_viewpager);
         clNextPrayer = rootView.findViewById(R.id.cl_next_prayer);
 
-        markerList = new ArrayList<>();
 
-        places = new ArrayList<>();
-        places.add(new LatLng(16.6883133, 74.4612817));
-        places.add(new LatLng(16.7076433, 74.4689206));
-        places.add(new LatLng(16.707782, 74.4773161));
-        places.add(new LatLng(16.7095022, 74.4402356));
-        places.add(new LatLng(16.6891011, 74.4578651));
-        places.add(new LatLng(16.749198, 74.4192259));
-        places.add(new LatLng(16.7154968, 74.456129)); // shortest khanjire
-
-        mMapView = rootView.findViewById(R.id.mv_home);
-        mMapView.onCreate(savedInstanceState);
-        mMapView.onResume(); // needed to get the map to display immediately
-
-        selectedMosqueAdvBeanArrayList = new ArrayList<>();
-
-        selectedMosqueAdvBeanArrayList.add(new SelectedMosqueAdvBean("Houghton Masjid", "1.5 KM",
-                "15 Minutes", R.drawable.mosque));
-        selectedMosqueAdvBeanArrayList.add(new SelectedMosqueAdvBean("", "", "",
-                R.drawable.banner_one));
-        selectedMosqueAdvBeanArrayList.add(new SelectedMosqueAdvBean("", "", "",
-                R.drawable.banner_two));
-        selectedMosqueAdvBeanArrayList.add(new SelectedMosqueAdvBean("", "", "",
-                R.drawable.banner_three));
         vpSelMosAdv.setAdapter(new HomeViewPagerAdapter(getContext(),
                 selectedMosqueAdvBeanArrayList, vpSelMosAdv));
 
@@ -194,272 +170,26 @@ public class Fragment_Home extends Fragment {
         bottomDownToPosition = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_down_to_postition);
         bottomUpToPosition = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_up_to_position);
 
-        tvPrayerList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //MainActivity.mBottomNavView.setSelectedItemId(R.id.action_schedule);
-                /*getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, new Fragment_Schedule())
-                        .commit();*/
-            }
-        });
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                mMap = googleMap;
-
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mMap.getUiSettings().setMapToolbarEnabled(false);
-
-                /*Collections.sort(places,new NearByPlaces(new LatLng(MainActivity.mLastKnownLocation.getLatitude(),
-                        MainActivity.mLastKnownLocation.getLongitude())));*/
-
-                if (mMap != null && MainActivity.mLastKnownLocation != null) {
-                    myLocationIcon =
-                            getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.ic_my_location));
-                    destIcon =
-                            getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.ic_near_mosque));
-                    CameraPosition cameraPosition =
-                            new CameraPosition.Builder().target(
-                                    new LatLng(MainActivity.mLastKnownLocation.getLatitude(),
-                                            MainActivity.mLastKnownLocation.getLongitude())
-                            ).zoom(MAP_ZOOM).build();
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                    placeNearestMarkers();
-                    drawRoute(places.get(0).latitude,places.get(0).longitude);
-                }
-
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        if (markerList.contains(marker)) {
-                            Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
-                            //drawRoute(marker.getPosition().latitude,marker.getPosition().longitude);
-                        }
-                        return false;
-                    }
-                });
-
-                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-                        if(!visibility){
-                            visibility = true;
-
-                            clNextPrayer.startAnimation(bottomUp);
-                            clNextPrayer.setVisibility(View.GONE);
-
-                            clViewpager.startAnimation(bottomDown);
-                            clViewpager.setVisibility(View.GONE);
-                        }
-                        else {
-                            visibility = false;
-                            clNextPrayer.startAnimation(bottomDownToPosition);
-                            clNextPrayer.setVisibility(View.VISIBLE);
-
-                            clViewpager.startAnimation(bottomUpToPosition);
-                            clViewpager.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
-            }
-        });
-
-
         return rootView;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
-    }
-
-    private void placeNearestMarkers() {
-        mMap.addMarker(new MarkerOptions()
-                .position( new LatLng(MainActivity.mLastKnownLocation.getLatitude(),
-                       MainActivity.mLastKnownLocation.getLongitude()))
-                .icon(myLocationIcon));
-        for (int i=0; i<=4; i++) {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(places.get(i).latitude, places.get(i).longitude))
-                    .icon(destIcon));
-            markerList.add(i, marker);
-        }
-    }
-
-    private void drawRoute(double latitude, double longitude) {
-
-        String urlTopass = makeURL(MainActivity.mLastKnownLocation.getLatitude(),
-                MainActivity.mLastKnownLocation.getLongitude(), latitude, longitude);
-
-        new connectAsyncTask(urlTopass).execute();
-    }
-
-    public String makeURL(double sourcelat, double sourcelog, double destlat,
-                          double destlog) {
-        StringBuilder urlString = new StringBuilder();
-        urlString.append("https://maps.googleapis.com/maps/api/directions/json");
-        urlString.append("?origin=");// from
-        urlString.append((sourcelat));
-        urlString.append(",");
-        urlString.append((sourcelog));
-        urlString.append("&destination=");// to
-        urlString.append((destlat));
-        urlString.append(",");
-        urlString.append((destlog));
-        urlString.append("&key=");// to
-        urlString.append(getResources().getString(R.string.google_maps_key));
-        urlString.append("&sensor=false&mode=driving&alternatives=true");
-        return urlString.toString();
-    }
-
-    private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    public void drawPath(String result) {
-        if (line != null) {
-            mMap.clear();
-        }
-
-        placeNearestMarkers();
-        try {
-            // Tranform the string into a json object
-            final JSONObject json = new JSONObject(result);
-            JSONArray routeArray = json.getJSONArray("routes");
-            JSONObject routes = routeArray.getJSONObject(0);
-            JSONObject overviewPolylines = routes
-                    .getJSONObject("overview_polyline");
-            String encodedString = overviewPolylines.getString("points");
-            List<LatLng> list = decodePoly(encodedString);
-
-            PolylineOptions options = new PolylineOptions().width(8).color(Color.DKGRAY).geodesic(true);
-            for (int z = 0; z < list.size(); z++) {
-                LatLng point = list.get(z);
-                options.add(point);
-            }
-            line = mMap.addPolyline(options);
-
-            LatLngBounds.Builder bc = new LatLngBounds.Builder();
-
-            for (LatLng item : list) {
-                bc.include(item);
-            }
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 280));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private List<LatLng> decodePoly(String encoded) {
-        List<LatLng> poly = new ArrayList<LatLng>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-
-        return poly;
-    }
-
-    private class connectAsyncTask extends AsyncTask<Void, Void, String> {
-        private ProgressDialog progressDialog;
-        String url;
-
-        connectAsyncTask(String urlPass) {
-            url = urlPass;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // TODO Auto-generated method stub
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getContext());
-            progressDialog.setMessage("Fetching route, Please wait...");
-            progressDialog.setIndeterminate(true);
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            JSONParser jParser= new JSONParser();
-            String json = jParser.getJSONFromUrl(url);
-            Log.d("URL :::: ", url);
-            return json;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            progressDialog.hide();
-            if (result != null) {
-                Log.d("RESULT :: ", result);
-                drawPath(result);
-            }
-        }
     }
 }

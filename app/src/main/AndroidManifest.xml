@@ -27,9 +27,10 @@
         <activity android:name=".MosqueDetailsActivity" />
         <activity android:name=".SearchActivity" />
 
+        <!-- TODO add your google map key here.-->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value=" *** Enter your google map key here ***" />
+            android:value="" />
 
         <activity
             android:name=".MainActivity"
